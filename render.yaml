@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: smart-payment-verification
+    env: python
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')" || echo "NLTK download failed, continuing..."
+      mkdir -p ml_models/models
+    startCommand: |
+      python app_enhanced.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.4
+      - key: PORT
+        value: 10000
+      - key: DEBUG_MODE
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: FRAUD_THRESHOLD
+        value: 0.7
+      - key: MAX_VERIFICATION_AGE
+        value: 24
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SMS_FORWARDER_SECRET
+        generateValue: true
+      - key: SMS_FORWARDER_NUMBER
+        value: "+250788123456"
+    healthCheckPath: /health
+    autoDeploy: false
+
+databases:
+  - name: payment-verification-db
+    databaseName: payment_verification
+    user: payment_user
+    region: oregon

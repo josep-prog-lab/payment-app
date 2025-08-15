@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Payment Verification API - Documentation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.6; 
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: -2rem -2rem 2rem -2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section h3 {
+            color: #555;
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 1rem;
+        }
+        
+        .method.post { background: #28a745; }
+        .method.get { background: #007bff; }
+        .method.put { background: #ffc107; color: #333; }
+        .method.delete { background: #dc3545; }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        
+        .widget-demo {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            background: #fafafa;
+            text-align: center;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            margin-top: -3rem;
+            margin-right: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .copy-btn:hover { background: #218838; }
+        
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .parameter-table th,
+        .parameter-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .parameter-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .required { color: #dc3545; font-weight: bold; }
+        .optional { color: #6c757d; }
+        
+        .status-code {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        
+        .status-200 { background: #d4edda; color: #155724; }
+        .status-400 { background: #f8d7da; color: #721c24; }
+        .status-401 { background: #f0ad4e; color: #856404; }
+        .status-500 { background: #f8d7da; color: #721c24; }
+        
+        .toc {
+            background: #e9ecef;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 1rem;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Payment Verification API</h1>
+            <p>Comprehensive API documentation for integrating MoMo payment verification with ML-powered fraud detection</p>
+        </div>
+        
+        <!-- Table of Contents -->
+        <div class="section">
+            <h2>Table of Contents</h2>
+            <div class="toc">
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#authentication">Authentication</a></li>
+                    <li><a href="#endpoints">API Endpoints</a>
+                        <ul>
+                            <li><a href="#health">Health Check</a></li>
+                            <li><a href="#sms">SMS Ingestion</a></li>
+                            <li><a href="#verify">Payment Verification</a></li>
+                            <li><a href="#admin">Admin Endpoints</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#widget">JavaScript Widget</a></li>
+                    <li><a href="#examples">Integration Examples</a></li>
+                    <li><a href="#errors">Error Handling</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Overview -->
+        <div class="section" id="overview">
+            <h2>Overview</h2>
+            <p>The Smart Payment Verification API enables businesses to automatically verify MoMo payments using machine learning-powered SMS parsing and fraud detection.</p>
+            
+            <h3>Base URL</h3>
+            <div class="code-block">https://your-app.onrender.com</div>
+            
+            <h3>Key Features</h3>
+            <ul style="margin: 1rem 0; padding-left: 2rem;">
+                <li>Real-time SMS parsing with NLP</li>
+                <li>Advanced fraud detection using ensemble ML models</li>
+                <li>Fuzzy matching for typo-resistant verification</li>
+                <li>Comprehensive admin dashboard</li>
+                <li>Easy JavaScript widget integration</li>
+            </ul>
+        </div>
+        
+        <!-- Authentication -->
+        <div class="section" id="authentication">
+            <h2>Authentication</h2>
+            <p>The API uses different authentication methods for different endpoints:</p>
+            
+            <h3>SMS Forwarder Authentication</h3>
+            <p>SMS endpoints require a secret header for authentication:</p>
+            <div class="code-block">X-Forwarder-Secret: your_secure_secret_here</div>
+            
+            <h3>Company API Key (Future)</h3>
+            <p>Company-specific endpoints will use API key authentication:</p>
+            <div class="code-block">Authorization: Bearer your_api_key_here</div>
+        </div>
+        
+        <!-- Endpoints -->
+        <div class="section" id="endpoints">
+            <h2>API Endpoints</h2>
+            
+            <div id="health">
+                <h3>Health Check</h3>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/health</code>
+                </div>
+                <p>Check system health and status.</p>
+                
+                <h4>Response</h4>
+                <div class="code-block">
+{
+    "status": "healthy",
+    "timestamp": "2024-08-15T10:30:00.000Z",
+    "version": "1.0.0",
+    "ml_models": "advanced",
+    "database_status": "connected",
+    "system_info": {
+        "cpu_percent": 15.2,
+        "memory_percent": 45.8,
+        "disk_percent": 60.1
+    }
+}</div>
+            </div>
+            
+            <div id="sms">
+                <h3>SMS Ingestion</h3>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <code>/api/sms</code>
+                </div>
+                <p>Receive and parse SMS from forwarder app.</p>
+                
+                <h4>Headers</h4>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Header</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>X-Forwarder-Secret</td>
+                            <td class="required">Required</td>
+                            <td>Authentication secret for SMS forwarder</td>
+                        </tr>
+                        <tr>
+                            <td>Content-Type</td>
+                            <td class="required">Required</td>
+                            <td>application/json</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Request Body</h4>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>text</td>
+                            <td class="required">Required</td>
+                            <td>The SMS message content</td>
+                        </tr>
+                        <tr>
+                            <td>from</td>
+                            <td class="required">Required</td>
+                            <td>Sender phone number</td>
+                        </tr>
+                        <tr>
+                            <td>timestamp</td>
+                            <td class="optional">Optional</td>
+                            <td>SMS received timestamp (ISO format)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Example Request</h4>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <div class="code-block">
+curl -X POST "https://your-app.onrender.com/api/sms" \
+  -H "X-Forwarder-Secret: your_secret" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "You have received RWF 5000 from John Doe +250788123456 on 15/08/2024 14:30. Ref: TX123456789",
+    "from": "+250123456789",
+    "timestamp": "2024-08-15T14:30:00Z"
+  }'</div>
+                
+                <h4>Responses</h4>
+                <p><span class="status-code status-200">200</span> SMS processed successfully</p>
+                <div class="code-block">
+{
+    "success": true,
+    "id": "uuid-payment-id",
+    "parsed_amount": 5000,
+    "parsed_txid": "TX123456789",
+    "confidence": 0.95
+}</div>
+                
+                <p><span class="status-code status-401">401</span> Authentication failed</p>
+                <p><span class="status-code status-400">400</span> Invalid request data</p>
+            </div>
+            
+            <div id="verify">
+                <h3>Payment Verification</h3>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <code>/api/verify</code>
+                </div>
+                <p>Verify a customer's payment against received SMS records.</p>
+                
+                <h4>Request Body</h4>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>txid</td>
+                            <td class="required">Required</td>
+                            <td>Transaction ID from customer</td>
+                        </tr>
+                        <tr>
+                            <td>phone</td>
+                            <td class="required">Required</td>
+                            <td>Customer phone number</td>
+                        </tr>
+                        <tr>
+                            <td>name</td>
+                            <td class="required">Required</td>
+                            <td>Customer full name</td>
+                        </tr>
+                        <tr>
+                            <td>amount</td>
+                            <td class="optional">Optional</td>
+                            <td>Expected payment amount</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Example Request</h4>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <div class="code-block">
+curl -X POST "https://your-app.onrender.com/api/verify" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "txid": "TX123456789",
+    "phone": "+250788123456", 
+    "name": "John Doe",
+    "amount": 5000
+  }'</div>
+                
+                <h4>Responses</h4>
+                <p><span class="status-code status-200">200</span> Verification completed</p>
+                <div class="code-block">
+{
+    "verified": true,
+    "verification_id": "uuid-verification-id",
+    "match_confidence": 1.0,
+    "fraud_risk": 0.15,
+    "risk_level": "LOW",
+    "amount": 5000,
+    "timestamp": "2024-08-15T14:30:00Z",
+    "recommendation": "APPROVE - Low fraud risk. Transaction appears legitimate."
+}</div>
+                
+                <p><span class="status-code status-200">200</span> Verification failed</p>
+                <div class="code-block">
+{
+    "verified": false,
+    "message": "No matching transaction found",
+    "suggestions": [
+        {
+            "txid": "TX123456788",
+            "amount": 5000,
+            "timestamp": "2024-08-15T14:29:00Z",
+            "confidence": 0.8
+        }
+    ]
+}</div>
+            </div>
+            
+            <div id="admin">
+                <h3>Admin Endpoints</h3>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/admin/stats</code>
+                </div>
+                <p>Get dashboard statistics for today.</p>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/admin/transactions</code>
+                </div>
+                <p>Get recent transactions with optional limit parameter.</p>
+                
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <code>/admin</code>
+                </div>
+                <p>Admin dashboard web interface.</p>
+            </div>
+        </div>
+        
+        <!-- JavaScript Widget -->
+        <div class="section" id="widget">
+            <h2>JavaScript Widget</h2>
+            <p>Easily integrate payment verification into your website with our JavaScript widget.</p>
+            
+            <h3>Basic Integration</h3>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <div class="code-block">
+&lt;!-- Add to your HTML head --&gt;
+&lt;script src="https://your-app.onrender.com/static/payment-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- Add to your page where you want the widget --&gt;
+&lt;div id="payment-verification"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    PaymentWidget.init({
+        container: '#payment-verification',
+        apiUrl: 'https://your-app.onrender.com',
+        onSuccess: function(result) {
+            console.log('Payment verified:', result);
+            // Handle successful verification
+        },
+        onError: function(error) {
+            console.log('Verification failed:', error);
+            // Handle verification failure
+        },
+        theme: 'light', // 'light' or 'dark'
+        language: 'en'  // 'en', 'fr', 'rw'
+    });
+&lt;/script&gt;</div>
+            
+            <h3>Widget Demo</h3>
+            <div class="widget-demo">
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 400px; margin: 0 auto; text-align: left; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #667eea;">Verify Your Payment</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name</label>
+                        <input type="text" placeholder="John Doe" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone Number</label>
+                        <input type="tel" placeholder="+250788123456" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Transaction ID</label>
+                        <input type="text" placeholder="TX123456789" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Amount (optional)</label>
+                        <input type="number" placeholder="5000" style="width: 100%; padding: 0.8rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
+                    </div>
+                    <button style="width: 100%; padding: 1rem; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: 500;">
+                        Verify Payment
+                    </button>
+                </div>
+                <p style="margin-top: 1rem; color: #666;">This is a demo of the payment verification widget</p>
+            </div>
+        </div>
+        
+        <!-- Integration Examples -->
+        <div class="section" id="examples">
+            <h2>Integration Examples</h2>
+            
+            <h3>SMS Forwarder App Configuration</h3>
+            <p>Configure your SMS forwarder app to send requests to your API:</p>
+            <div class="code-block">
+URL: https://your-app.onrender.com/api/sms
+Method: POST
+Headers:
+  X-Forwarder-Secret: your_secure_secret
+  Content-Type: application/json
+
+Body template:
+{
+  "text": "$SMS_BODY",
+  "from": "$SMS_SENDER",
+  "timestamp": "$SMS_TIMESTAMP"
+}</div>
+            
+            <h3>E-commerce Integration</h3>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <div class="code-block">
+// After customer places order and is redirected to payment page
+async function verifyPayment(orderData, customerInput) {
+    try {
+        const response = await fetch('https://your-app.onrender.com/api/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                txid: customerInput.transactionId,
+                phone: customerInput.phoneNumber,
+                name: customerInput.fullName,
+                amount: orderData.totalAmount
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.verified) {
+            // Payment verified - complete the order
+            completeOrder(orderData, result);
+        } else {
+            // Payment verification failed
+            showError('Payment verification failed: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Verification error:', error);
+        showError('Payment verification service unavailable');
+    }
+}</div>
+            
+            <h3>WordPress Plugin</h3>
+            <div class="code-block">
+// Add to your WordPress theme's functions.php
+function add_payment_verification_widget() {
+    wp_enqueue_script('payment-widget', 'https://your-app.onrender.com/static/payment-widget.js');
+}
+add_action('wp_enqueue_scripts', 'add_payment_verification_widget');
+
+// Shortcode for inserting widget
+function payment_verification_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'api_url' => 'https://your-app.onrender.com',
+        'theme' => 'light'
+    ), $atts);
+    
+    return '&lt;div id="payment-verification-' . uniqid() . '"&gt;&lt;/div&gt;
+            &lt;script&gt;
+                PaymentWidget.init({
+                    container: "#payment-verification-' . uniqid() . '",
+                    apiUrl: "' . $atts['api_url'] . '",
+                    theme: "' . $atts['theme'] . '"
+                });
+            &lt;/script&gt;';
+}
+add_shortcode('payment_verification', 'payment_verification_shortcode');</div>
+        </div>
+        
+        <!-- Error Handling -->
+        <div class="section" id="errors">
+            <h2>Error Handling</h2>
+            <p>The API uses conventional HTTP response codes to indicate success or failure.</p>
+            
+            <h3>HTTP Status Codes</h3>
+            <table class="parameter-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Meaning</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="status-code status-200">200</span></td>
+                        <td>OK</td>
+                        <td>Request succeeded</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-400">400</span></td>
+                        <td>Bad Request</td>
+                        <td>Invalid request parameters</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-401">401</span></td>
+                        <td>Unauthorized</td>
+                        <td>Authentication failed</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-404">404</span></td>
+                        <td>Not Found</td>
+                        <td>Endpoint does not exist</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-500">500</span></td>
+                        <td>Internal Server Error</td>
+                        <td>Server error occurred</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-code status-500">503</span></td>
+                        <td>Service Unavailable</td>
+                        <td>Database or service temporarily unavailable</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Error Response Format</h3>
+            <div class="code-block">
+{
+    "error": "Error message describing what went wrong",
+    "code": "ERROR_CODE",
+    "details": {
+        "field": "Additional error details if applicable"
+    }
+}</div>
+        </div>
+    </div>
+    
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling.textContent;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#28a745';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

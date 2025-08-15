@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Payment Verification - Admin Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f7fa; 
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover { transform: translateY(-2px); }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card.payments .stat-value { color: #4CAF50; }
+        .stat-card.verifications .stat-value { color: #2196F3; }
+        .stat-card.fraud .stat-value { color: #f44336; }
+        .stat-card.pending .stat-value { color: #FF9800; }
+        
+        .transactions-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: #333;
+        }
+        
+        .refresh-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .refresh-btn:hover { background: #45a049; }
+        
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .transactions-table th,
+        .transactions-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .transactions-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-verified { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-failed { background: #f8d7da; color: #721c24; }
+        .status-suspicious { background: #f0ad4e; color: #ffffff; }
+        
+        .risk-score {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .risk-low { background: #d4edda; color: #155724; }
+        .risk-medium { background: #fff3cd; color: #856404; }
+        .risk-high { background: #f8d7da; color: #721c24; }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .status-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .status-item {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container { padding: 0 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .transactions-table { font-size: 0.8rem; }
+            .transactions-table th,
+            .transactions-table td { padding: 8px; }
+        }
+        
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Smart Payment Verification - Admin Dashboard</h1>
+        <p>Monitor payments, verifications, and fraud detection in real-time</p>
+    </div>
+    
+    <div class="dashboard-container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card payments">
+                <div class="stat-value" id="paymentsToday">-</div>
+                <div class="stat-label">Payments Today</div>
+            </div>
+            <div class="stat-card verifications">
+                <div class="stat-value" id="verificationsToday">-</div>
+                <div class="stat-label">Verifications Today</div>
+            </div>
+            <div class="stat-card fraud">
+                <div class="stat-value" id="highRiskCount">-</div>
+                <div class="stat-label">High Risk Transactions</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-value" id="pendingCount">-</div>
+                <div class="stat-label">Pending Verifications</div>
+            </div>
+        </div>
+        
+        <!-- Status Breakdown -->
+        <div class="transactions-section">
+            <div class="section-header">
+                <h2 class="section-title">Verification Status Breakdown</h2>
+            </div>
+            <div class="status-breakdown" id="statusBreakdown">
+                <!-- Status items will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Recent Transactions -->
+        <div class="transactions-section" style="margin-top: 2rem;">
+            <div class="section-header">
+                <h2 class="section-title">Recent Transactions</h2>
+                <div class="auto-refresh">
+                    <span>Auto-refresh</span>
+                    <label class="switch">
+                        <input type="checkbox" id="autoRefresh" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <button class="refresh-btn" onclick="loadTransactions()">Refresh</button>
+                </div>
+            </div>
+            
+            <div id="transactionsLoading" class="loading">
+                Loading transactions...
+            </div>
+            
+            <div id="transactionsError" class="error" style="display: none;"></div>
+            
+            <div id="transactionsContainer" style="display: none;">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>TxID</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Fraud Risk</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTable">
+                        <!-- Transactions will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let autoRefreshInterval;
+        
+        // Load dashboard statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const stats = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('paymentsToday').textContent = stats.payments_today || 0;
+                    document.getElementById('verificationsToday').textContent = stats.verifications_today || 0;
+                    document.getElementById('highRiskCount').textContent = stats.high_risk_transactions || 0;
+                    document.getElementById('pendingCount').textContent = stats.status_breakdown?.pending || 0;
+                    
+                    // Update status breakdown
+                    const breakdown = stats.status_breakdown || {};
+                    const statusContainer = document.getElementById('statusBreakdown');
+                    statusContainer.innerHTML = '';
+                    
+                    Object.entries(breakdown).forEach(([status, count]) => {
+                        const item = document.createElement('div');
+                        item.className = 'status-item';
+                        item.innerHTML = `<strong>${status}</strong>: ${count}`;
+                        statusContainer.appendChild(item);
+                    });
+                } else {
+                    throw new Error(stats.error || 'Failed to load statistics');
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Load recent transactions
+        async function loadTransactions() {
+            const loadingDiv = document.getElementById('transactionsLoading');
+            const errorDiv = document.getElementById('transactionsError');
+            const containerDiv = document.getElementById('transactionsContainer');
+            
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            containerDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/admin/transactions?limit=20');
+                const transactions = await response.json();
+                
+                if (response.ok) {
+                    const tableBody = document.getElementById('transactionsTable');
+                    tableBody.innerHTML = '';
+                    
+                    transactions.forEach(transaction => {
+                        const row = document.createElement('tr');
+                        
+                        const createdAt = new Date(transaction.created_at);
+                        const timeStr = createdAt.toLocaleString();
+                        
+                        const fraudRisk = transaction.fraud_risk || 0;
+                        const riskClass = fraudRisk > 0.7 ? 'risk-high' : fraudRisk > 0.4 ? 'risk-medium' : 'risk-low';
+                        
+                        row.innerHTML = `
+                            <td>${timeStr}</td>
+                            <td>${transaction.customer_name || '-'}</td>
+                            <td>${transaction.customer_phone || '-'}</td>
+                            <td>${transaction.submitted_txid || '-'}</td>
+                            <td>${transaction.submitted_amount ? 'RWF ' + transaction.submitted_amount.toLocaleString() : '-'}</td>
+                            <td><span class="status-badge status-${transaction.verification_status}">${transaction.verification_status}</span></td>
+                            <td><span class="risk-score ${riskClass}">${Math.round(fraudRisk * 100)}%</span></td>
+                            <td>${transaction.match_confidence ? Math.round(transaction.match_confidence * 100) + '%' : '-'}</td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                    
+                    loadingDiv.style.display = 'none';
+                    containerDiv.style.display = 'block';
+                } else {
+                    throw new Error(transactions.error || 'Failed to load transactions');
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = 'Error loading transactions: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        // Setup auto-refresh
+        function setupAutoRefresh() {
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            
+            function toggleAutoRefresh() {
+                if (autoRefreshCheckbox.checked) {
+                    // Start auto-refresh every 30 seconds
+                    autoRefreshInterval = setInterval(() => {
+                        loadStats();
+                        loadTransactions();
+                    }, 30000);
+                } else {
+                    // Stop auto-refresh
+                    if (autoRefreshInterval) {
+                        clearInterval(autoRefreshInterval);
+                        autoRefreshInterval = null;
+                    }
+                }
+            }
+            
+            autoRefreshCheckbox.addEventListener('change', toggleAutoRefresh);
+            toggleAutoRefresh(); // Initialize
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadTransactions();
+            setupAutoRefresh();
+        });
+        
+        // Add visibility change handler to pause auto-refresh when tab is not visible
+        document.addEventListener('visibilitychange', function() {
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            if (document.hidden) {
+                // Tab is not visible, pause auto-refresh
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            } else {
+                // Tab is visible, resume auto-refresh if enabled
+                if (autoRefreshCheckbox.checked && !autoRefreshInterval) {
+                    autoRefreshInterval = setInterval(() => {
+                        loadStats();
+                        loadTransactions();
+                    }, 30000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
