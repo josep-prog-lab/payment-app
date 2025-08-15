@@ -1,100 +1,418 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>MoMo Payment Verification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Payment Verification System</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { background: #0066cc; color: white; border: none; padding: 10px 15px; cursor: pointer; }
-        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0072ff;
+        }
+        .section h2 {
+            color: #0072ff;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #0072ff;
+        }
+        button {
+            background: linear-gradient(45deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            margin-right: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0072ff;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0072ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            border-bottom-color: #0072ff;
+            color: #0072ff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h1>MoMo Payment Verification</h1>
-    <p>After making payment, please enter your details below:</p>
-    
-    <form id="verificationForm">
-        <div class="form-group">
-            <label for="name">Your Full Name:</label>
-            <input type="text" id="name" required>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Smart Payment Verification</h1>
+            <p>AI-Powered MoMo Payment Verification for Rwanda Businesses</p>
         </div>
-        <div class="form-group">
-            <label for="phone">Your Phone Number:</label>
-            <input type="tel" id="phone" required>
+
+        <div class="content">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab('verify')">💳 Verify Payment</button>
+                    <button class="tab-button" onclick="showTab('test')">🧪 Test SMS</button>
+                    <button class="tab-button" onclick="showTab('stats')">📊 Statistics</button>
+                </div>
+            </div>
+
+            <!-- Payment Verification Tab -->
+            <div id="verify-tab" class="tab-content active">
+                <div class="section">
+                    <h2>💳 Verify Payment</h2>
+                    <p>Customer enters TxID, Name, and Phone after making payment</p>
+                    
+                    <form id="verifyForm">
+                        <div class="form-group">
+                            <label for="txid">Transaction ID (TxID) *</label>
+                            <input type="text" id="txid" name="txid" placeholder="e.g., MP240815123456" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customerName">Customer Name *</label>
+                            <input type="text" id="customerName" name="name" placeholder="e.g., John Doe" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number *</label>
+                            <input type="tel" id="customerPhone" name="phone" placeholder="e.g., 0781234567 or +250781234567" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="amount">Amount (RWF)</label>
+                            <input type="number" id="amount" name="amount" placeholder="e.g., 50000" step="1">
+                        </div>
+                        
+                        <button type="submit">Verify Payment</button>
+                        <button type="button" onclick="loadSampleData()">Load Sample</button>
+                    </form>
+
+                    <div class="loading" id="verifyLoading">
+                        <div class="spinner"></div>
+                        <p>Verifying payment...</p>
+                    </div>
+                    
+                    <div class="result" id="verifyResult"></div>
+                </div>
+            </div>
+
+            <!-- SMS Testing Tab -->
+            <div id="test-tab" class="tab-content">
+                <div class="section">
+                    <h2>📱 Test SMS Parser</h2>
+                    <p>Test the SMS parsing functionality with sample MoMo messages</p>
+                    
+                    <form id="smsForm">
+                        <div class="form-group">
+                            <label for="smsText">SMS Text</label>
+                            <textarea id="smsText" name="text" rows="4" placeholder="Paste a MoMo SMS here to test parsing..."></textarea>
+                        </div>
+                        
+                        <button type="button" onclick="loadSampleSMS()">Load Sample SMS</button>
+                        <button type="submit">Parse SMS</button>
+                    </form>
+                    
+                    <div class="loading" id="smsLoading">
+                        <div class="spinner"></div>
+                        <p>Parsing SMS...</p>
+                    </div>
+                    
+                    <div class="result" id="smsResult"></div>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="stats-tab" class="tab-content">
+                <div class="section">
+                    <h2>📊 System Statistics</h2>
+                    <div class="stats" id="systemStats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalTransactions">-</div>
+                            <div class="stat-label">Total Transactions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="verifiedTransactions">-</div>
+                            <div class="stat-label">Verified</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="verificationRate">-</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                    </div>
+                    <button onclick="loadStats()">Refresh Stats</button>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="txid">Transaction ID (TxID):</label>
-            <input type="text" id="txid" required>
-        </div>
-        <div class="form-group">
-            <label for="amount">Amount Paid (optional):</label>
-            <input type="number" id="amount">
-        </div>
-        <button type="submit">Verify Payment</button>
-    </form>
-    
-    <div id="result" class="result" style="display: none;"></div>
-    
+    </div>
+
     <script>
-        document.getElementById('verificationForm').addEventListener('submit', async (e) => {
+        // Tab switching
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+        });
+
+        // Verify payment form
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const txid = document.getElementById('txid').value;
-            const amount = document.getElementById('amount').value;
+            const loading = document.getElementById('verifyLoading');
+            const result = document.getElementById('verifyResult');
             
-            const resultDiv = document.getElementById('result');
-            resultDiv.style.display = 'block';
-            resultDiv.textContent = 'Verifying...';
-            resultDiv.className = 'result';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
             
             try {
                 const response = await fetch('/api/verify', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        name, phone, txid, amount
-                    })
+                    body: JSON.stringify(data)
                 });
                 
-                const data = await response.json();
+                const json = await response.json();
                 
-                if (data.verified) {
-                    resultDiv.className = 'result success';
-                    resultDiv.innerHTML = `
-                        <h3>Payment Verified!</h3>
-                        <p>Amount: RWF ${data.amount}</p>
-                        <p>Time: ${new Date(data.timestamp).toLocaleString()}</p>
-                        <p>Fraud Risk: ${Math.round(data.fraud_risk * 100)}%</p>
-                    `;
-                } else {
-                    resultDiv.className = 'result error';
-                    resultDiv.innerHTML = `
-                        <h3>Verification Failed</h3>
-                        <p>${data.message}</p>
-                        ${data.suggestions && data.suggestions.length ? `
-                        <h4>Possible Matches:</h4>
-                        <ul>
-                            ${data.suggestions.map(s => `
-                                <li>TxID: ${s.txid}, Amount: RWF ${s.amount}, Time: ${new Date(s.timestamp).toLocaleString()}</li>
-                            `).join('')}
-                        </ul>
-                        ` : ''}
-                    `;
-                }
+                result.innerHTML = `
+                    <h3>${json.verified ? '✅ Payment Verified!' : '❌ Verification Failed'}</h3>
+                    <pre>${JSON.stringify(json, null, 2)}</pre>
+                `;
+                result.className = 'result ' + (json.verified ? 'success' : 'error');
+                result.style.display = 'block';
+                
             } catch (error) {
-                resultDiv.className = 'result error';
-                resultDiv.textContent = 'Error verifying payment. Please try again.';
-                console.error(error);
+                result.innerHTML = `<h3>❌ Error</h3><p>${error.message}</p>`;
+                result.className = 'result error';
+                result.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
             }
         });
+
+        // SMS parsing form
+        document.getElementById('smsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('smsLoading');
+            const result = document.getElementById('smsResult');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/api/test/parse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const json = await response.json();
+                
+                result.innerHTML = `
+                    <h3>${json.success ? '✅ SMS Parsed Successfully!' : '❌ Parsing Failed'}</h3>
+                    <pre>${JSON.stringify(json, null, 2)}</pre>
+                `;
+                result.className = 'result ' + (json.success ? 'success' : 'error');
+                result.style.display = 'block';
+                
+            } catch (error) {
+                result.innerHTML = `<h3>❌ Error</h3><p>${error.message}</p>`;
+                result.className = 'result error';
+                result.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        // Load system stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalTransactions').textContent = stats.total_transactions || 0;
+                document.getElementById('verifiedTransactions').textContent = stats.verified_transactions || 0;
+                document.getElementById('verificationRate').textContent = (stats.verification_rate || 0).toFixed(1) + '%';
+                
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Load sample SMS for testing
+        function loadSampleSMS() {
+            const samples = [
+                'MTN Mobile Money: You received RWF 50,000.00 from JOHN DOE (0781234567). Ref: MP240815123456',
+                'Airtel Money: Transfer successful. Amount: 25000 RWF. TxnID: AM20240815001. From: ALICE UWIMANA (0788987654)',
+                'Tigo Cash: Wakiriye RWF 15,000 kuva PIERRE NKURUNZIZA (0732123456) ku 15/08/2024 14:30. Ref: TC789012345'
+            ];
+            
+            const randomSample = samples[Math.floor(Math.random() * samples.length)];
+            document.getElementById('smsText').value = randomSample;
+        }
+
+        // Load sample verification data
+        function loadSampleData() {
+            document.getElementById('txid').value = 'MP240815123456';
+            document.getElementById('customerName').value = 'JOHN DOE';
+            document.getElementById('customerPhone').value = '0781234567';
+            document.getElementById('amount').value = '50000';
+        }
     </script>
 </body>
 </html>

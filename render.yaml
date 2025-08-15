@@ -6,13 +6,12 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-      python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')" || echo "NLTK download failed, continuing..."
-      mkdir -p ml_models/models
+      mkdir -p templates static
     startCommand: |
-      python app_enhanced.py
+      gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.4
+        value: 3.11.7
       - key: PORT
         value: 10000
       - key: DEBUG_MODE
@@ -23,19 +22,20 @@ services:
         value: 0.7
       - key: MAX_VERIFICATION_AGE
         value: 24
+      - key: ENABLE_TEST_ENDPOINTS
+        value: true
       - key: SUPABASE_URL
-        sync: false
+        fromDatabase:
+          name: supabase-config
+          property: connectionString
       - key: SUPABASE_KEY
-        sync: false
+        fromDatabase:
+          name: supabase-config
+          property: password
       - key: SMS_FORWARDER_SECRET
         generateValue: true
       - key: SMS_FORWARDER_NUMBER
-        value: "+250788123456"
+        value: "+250791646062"
     healthCheckPath: /health
     autoDeploy: false
-
-databases:
-  - name: payment-verification-db
-    databaseName: payment_verification
-    user: payment_user
     region: oregon
