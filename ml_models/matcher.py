@@ -1,24 +1,33 @@
 import re
 from difflib import SequenceMatcher
-try:
-    from Levenshtein import distance as levenshtein_distance
-except ImportError:
-    def levenshtein_distance(a, b):
-        """Fallback Levenshtein distance calculation"""
-        if len(a) < len(b):
-            return levenshtein_distance(b, a)
-        if len(b) == 0:
-            return len(a)
-        previous_row = range(len(b) + 1)
-        for i, c1 in enumerate(a):
-            current_row = [i + 1]
-            for j, c2 in enumerate(b):
-                insertions = previous_row[j + 1] + 1
-                deletions = current_row[j] + 1
-                substitutions = previous_row[j] + (c1 != c2)
-                current_row.append(min(insertions, deletions, substitutions))
-            previous_row = current_row
-        return previous_row[-1]
+
+def levenshtein_distance(a, b):
+    """Pure Python Levenshtein distance calculation"""
+    if len(a) < len(b):
+        return levenshtein_distance(b, a)
+    if len(b) == 0:
+        return len(a)
+    previous_row = range(len(b) + 1)
+    for i, c1 in enumerate(a):
+        current_row = [i + 1]
+        for j, c2 in enumerate(b):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+    return previous_row[-1]
+
+def similarity_ratio(a, b):
+    """Calculate similarity ratio (0.0 to 1.0) between two strings"""
+    if not a and not b:
+        return 1.0
+    if not a or not b:
+        return 0.0
+    
+    distance = levenshtein_distance(a.lower(), b.lower())
+    max_len = max(len(a), len(b))
+    return 1.0 - (distance / max_len)
 
 def match_transaction(customer_txid, customer_phone, customer_amount, all_payments):
     """Fuzzy match a customer's TxID to received payments"""

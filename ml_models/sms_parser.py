@@ -10,7 +10,9 @@ try:
     from unidecode import unidecode
 except ImportError:
     def unidecode(text):
-        return text
+        """Fallback function to handle non-ASCII characters"""
+        # Simple ASCII conversion fallback
+        return text.encode('ascii', 'ignore').decode('ascii')
 
 
 class SMSParser:
